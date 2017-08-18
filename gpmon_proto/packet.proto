@@ -1,0 +1,224 @@
+syntax = "proto3";
+package gpmon_proto
+
+/*
+struct gpmon_qlogkey_t {
+	int32 Tmid; 
+    int32 Ssid;
+    int32 Ccnt;
+};*/
+message QlogKey {
+    int32 tmid = 1;
+    int32 ssid = 2;
+    int32 ccnt = 3;
+}
+/*
+struct gpmon_proc_metrics_t {
+    uint32 Fd_cnt;
+    float        Cpu_pct;
+    struct {
+		uint64 MemSize, MemResident, MemShare;
+    } Mem;
+};
+*/
+
+message GpmonProcMetrics {
+    uint32 fd_cnt = 1;
+    float cpu_pct = 2;
+    message Memory {
+        uint64 memsize = 1;
+        uint64 memresident = 2;
+        uint64 memshare = 3;
+    }
+    Memory mem = 3;
+}
+/*
+struct gpmon_qlog_t
+{
+	gpmon_qlogkey_t Key;
+	char        User[NAMEDATALEN];
+	char        DB[NAMEDATALEN];
+	int32 Tsubmit, Tstart, Tfin;
+	int32 Status;		
+	int32 Cost;
+	int64 Cpu_elapsed;
+	gpmon_proc_metrics_t P_metrics;
+};
+*/
+message GpmonQlog {
+    QlogKey key = 1;
+    bytes user = 2;
+    bytes db = 3;
+    int32 tsubmit = 4;
+    int32 tstart = 5;
+    int32 tfin = 6;
+    int32 status = 7;
+    int32 cost = 8;
+    int64 cpu_elapsed = 9;
+    GpmonProcMetrics p_metrics = 10;
+}
+
+/*
+typedef struct gpmon_qexec_hash_key_t {
+	int32 Segid;
+	int32 Pid;
+	int32 Nid;
+}gpmon_qexec_hash_key_t;
+*/
+message QexecHashKey {
+    int32 segid = 1;
+    int32 pid = 2;
+    int32 nid = 3;
+}
+/*
+typedef struct gpmon_qexeckey_t {
+    int32 Tmid; 
+    int32 Ssid;
+    int32 Ccnt;
+    gpmon_qexec_hash_key_t Hash_key;
+}gpmon_qexeckey_t;
+*/
+
+message QexecKey {
+    int32 tmid = 1;
+    int32 ssid = 2;
+    int32 ccnt = 3;
+    QexecHashKey hash_key = 4;
+}
+/*
+struct gpmon_qexec_t {
+	gpmon_qexeckey_t Key;
+	int32  		Pnid;
+	char		Hname[NAMEDATALEN];
+	uint8		Status;  
+	uint64		Cpu_elapsed;
+	gpmon_proc_metrics_t 	P_metrics;
+	uint64 		Rowsout;
+	uint64 		Rowsin;
+	double Startup_cost;
+	double Total_cost;
+	double Plan_rows;
+	int32 Node_type;
+};
+*/
+message GpmonQexec {
+    QexecKey key = 1;
+    int32 pnid = 2;
+    bytes hname = 3;
+    bytes status = 4;
+    uint64 cpu_elapsed = 5;
+    GpmonProcMetrics p_metrics = 6;
+    uint64 rowsout = 7;
+    uint64 rowsin = 8;
+    double startup_cost = 9;
+    double total_cost = 10;
+    double plan_rows = 11;
+    int32 node_type = 12;
+}
+/*
+struct gpmon_seginfo_t {
+	int32 dbid; 							// dbid as in gp_segment_configuration
+	char hostname[NAMEDATALEN];					// hostname without NIC extension
+	uint64 dynamic_memory_used;			// allocated memory in bytes
+	uint64 dynamic_memory_available;		// available memory in bytes,
+};
+*/
+message GpmonSeginfo {
+    int32 dbid = 1;
+    bytes hostname = 2;
+    uint64 dynamic_memory_used = 3;
+    uint64 dynamic_memory_available = 4;
+}
+/*
+struct gpmon_hello_t {
+    int64 signature;
+    int32 pid;
+};
+*/
+message GpmonHello {
+    int64 signature = 1;
+    int32 pid = 2;
+}
+/*
+struct gpmon_fsinfokey_t
+{
+	char fsname [GPMON_FSINFO_MAX_PATH];
+	char hostname[NAMEDATALEN];
+};*/
+message GpmonFSinfo {
+    bytes fsname = 1;
+    bytes hostname = 2;
+}
+/*
+struct gpmon_metrics_t
+{
+	char hname[NAMEDATALEN];
+	struct
+	{
+		uint64 total, used, actual_used, actual_free;
+	} mem;
+
+	struct
+	{
+		uint64 total, used, page_in, page_out;
+	} swap;
+
+	struct
+	{
+		float user_pct, sys_pct, idle_pct;
+	} cpu;
+
+	struct
+	{
+		float value[3];
+	} load_avg;
+
+	struct
+	{
+		uint64 ro_rate, wo_rate, rb_rate, wb_rate;
+	} disk;
+
+	struct
+	{
+		uint64 rp_rate, wp_rate, rb_rate, wb_rate;
+	} net;
+};
+*/
+message GpmonMetrics {
+    bytes hname = 1;
+    message Mem {
+        uint64 total = 1;
+        uint64 used = 2;
+        uint64 actual_used = 3;
+        uint64 actual_free = 4;
+    }
+    Mem mem = 2;
+}
+/*
+struct gpmon_packet_t {
+    int32 Magic;
+    int32 Version;
+    int32 Pkttype;
+	uint64 Shmid;
+    union {
+		gpmon_hello_t   Hello;
+		gpmon_metrics_t Metrics;
+		gpmon_qlog_t    Qlog;
+		gpmon_qexec_t   Qexec;
+		gpmon_seginfo_t Seginfo;
+		gpmon_fsinfo_t Fsinfo;
+    } U;
+};
+*/
+message GpmonPacket {
+    int32 magic = 1;
+    int32 version = 2;
+    int32 pkttype = 3;
+    uint64 shmid = 4;
+    GpmonHello hello = 5;
+    GpmonMetrics metrics = 6;
+    GpmonQlog qlog = 7;
+    GpmonQexec qexec = 8;
+    GpmonSeginfo seginfo = 9;
+    GpmonFSinfo fsinfo = 10;
+}
