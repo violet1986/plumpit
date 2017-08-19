@@ -1,4 +1,4 @@
-package plumquery
+package querypit
 
 // DistributedNodeKey represent a node index
 type DistributedNodeKey struct {

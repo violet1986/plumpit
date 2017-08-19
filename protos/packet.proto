@@ -1,5 +1,5 @@
 syntax = "proto3";
-package gpmon_proto
+package protos; 
 
 /*
 struct gpmon_qlogkey_t {

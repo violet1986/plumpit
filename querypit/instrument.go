@@ -1,4 +1,4 @@
-package plumquery
+package querypit 
 
 type instrTime [16]byte
 

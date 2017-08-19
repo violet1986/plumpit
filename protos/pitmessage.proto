@@ -1,0 +1,15 @@
+syntax = "proto3";
+package protos;
+enum EnumPitType {
+    UNKNOWN = 0;
+    SYSTEM = 1;
+    SYSTEM_CPU = 2;
+    SYSTEM_MEMORY = 3;
+  }   
+
+message SystemCPU {
+    EnumPitType pit_type = 1;
+    uint64 user = 2;
+    uint64 sys = 3;
+    uint64 idle = 4;
+}
