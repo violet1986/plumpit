@@ -6,8 +6,7 @@ import (
 	"github.com/cloudfoundry/gosigar"
 )
 
-type SigarSource struct {
-}
+type SigarSource struct{}
 
 func (self SigarSource) GetSystemCPU() protos.SystemCPU {
 	var cpu sigar.Cpu

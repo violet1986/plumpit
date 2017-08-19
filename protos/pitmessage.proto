@@ -5,6 +5,8 @@ enum EnumPitType {
     SYSTEM = 1;
     SYSTEM_CPU = 2;
     SYSTEM_MEMORY = 3;
+    PROC = 10;
+    PROC_CPU = 11;
   }   
 
 message SystemCPU {
@@ -12,4 +14,9 @@ message SystemCPU {
     uint64 user = 2;
     uint64 sys = 3;
     uint64 idle = 4;
+}
+
+message ProcCPU {
+    EnumPitType pit_type = 1;
+    double percent = 2;
 }
