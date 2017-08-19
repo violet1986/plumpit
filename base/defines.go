@@ -12,12 +12,17 @@ type RawPit interface {
 type PitMessage interface {
 	Append(interface{}) PitMessage
 }
-
-type Source interface {
+type Source interface{}
+type SystemSource interface {
 	GetSystemCPU() protos.SystemCPU
+}
+type ProcSource interface {
 }
 type SourceHandlerFunc func(s Source) interface{}
 
 func GetSystemCPUHandler(s Source) interface{} {
-	return s.GetSystemCPU()
+	if sysSource, ok := s.(SystemSource); ok {
+		return sysSource.GetSystemCPU()
+	}
+	return nil
 }

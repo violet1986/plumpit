@@ -16,7 +16,7 @@ var _ = Describe("Systempit With Sigar Source", func() {
 	})
 	Context("System CPU test", func() {
 		functions := []base.SourceHandlerFunc{base.GetSystemCPUHandler}
-		res := GetSystemGoGenerators(functions)
+		res := base.GoGenerators(functions)
 		It("Test GetSystemGoGenerators", func() {
 			Expect(len(res)).NotTo(Equal(0))
 		})
@@ -25,8 +25,9 @@ var _ = Describe("Systempit With Sigar Source", func() {
 			ch := make(chan interface{})
 			go getcpu(sigarTestSource, ch)
 			cpu := <-ch
+			Expect(cpu).NotTo(BeNil())
 			syscpu := cpu.(protos.SystemCPU)
-			//Expect(syscpu.Sys == 0).To(BeFalse())
+			Expect(syscpu.Sys == 0).To(BeFalse())
 			Expect(syscpu.PitType).To(Equal(protos.EnumPitType_SYSTEM_CPU))
 		})
 
