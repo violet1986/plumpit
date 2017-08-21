@@ -17,13 +17,5 @@ type SystemSource interface {
 	GetSystemCPU() protos.SystemCPU
 }
 type ProcSource interface {
-	GetProcCPU() protos.ProcCPU
-}
-type SourceHandlerFunc func(s Source) interface{}
-
-func GetSystemCPUHandler(s Source) interface{} {
-	if sysSource, ok := s.(SystemSource); ok {
-		return sysSource.GetSystemCPU()
-	}
-	return nil
+	GetProcCPU(duration interface{}) protos.ProcCPU
 }

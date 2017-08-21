@@ -2,10 +2,10 @@ package systempit_test
 
 import (
 	"fmt"
-	"os"
 	"plumpit/base"
 	"plumpit/protos"
 	. "plumpit/systempit"
+	"time"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -17,16 +17,12 @@ var _ = Describe("Systempit With Sigar Source", func() {
 		sigarTestSource = SigarSource{}
 	})
 	Context("System CPU test", func() {
-		functions := []base.SourceHandlerFunc{base.GetSystemCPUHandler}
-		res := base.GoGenerators(functions)
+		cpuFunc := base.GetSystemCPUHandler()
 		It("Test GetSystemGoGenerators", func() {
-			Expect(len(res)).NotTo(Equal(0))
+			Expect(cpuFunc).NotTo(BeNil())
 		})
 		It("Test GetSystemCPU", func() {
-			getcpu := res[0]
-			ch := make(chan interface{})
-			go getcpu(sigarTestSource, ch)
-			cpu := <-ch
+			cpu := cpuFunc(sigarTestSource)
 			Expect(cpu).NotTo(BeNil())
 			syscpu := cpu.(protos.SystemCPU)
 			Expect(syscpu.Sys == 0).To(BeFalse())
@@ -38,15 +34,16 @@ var _ = Describe("Systempit With Sigar Source", func() {
 })
 
 var _ = Describe("Proc with gopsutil", func() {
-	testPid := os.Getpid()
-	proc := NewProcPsutilSource(testPid)
-	cpu := (*proc).GetProcCPU()
-	fmt.Println(cpu)
+	//testPid :=
+	testPid := 8084
+	procTestSource := NewProcPsutilSource(testPid)
+	getCpuEvery3Second := base.GetProcCPUHandler(time.Duration(3))
 	It("process should not be nil", func() {
-		Expect(proc).NotTo(BeNil())
+		Expect(procTestSource).NotTo(BeNil())
 	})
 	It("process cpu should not be 0", func() {
-		Expect(cpu).NotTo(BeNil())
+		Expect(getCpuEvery3Second).NotTo(BeNil())
+		cpu := getCpuEvery3Second(procTestSource).(protos.ProcCPU)
 		Expect(cpu.Percent == 0.0).NotTo(BeTrue(), fmt.Sprintf("%f", cpu.Percent))
 	})
 
