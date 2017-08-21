@@ -16,13 +16,14 @@ func NewProcPsutilSource(pid int) *ProcPsutilSource {
 	process := proc.Process{Pid: int32(pid)}
 	return &ProcPsutilSource{process: process}
 }
-func (self ProcPsutilSource) GetProcCPU(duration interface{}) protos.ProcCPU {
+func (self ProcPsutilSource) GetProcCpu(duration interface{}) protos.PitMessage {
 	percent, err := self.process.Percent(duration.(time.Duration) * time.Second)
 	if err != nil {
-		log.Println("Error during GetProcCPU:", err)
+		log.Println("Error during GetProcCpu:", err)
 	}
-	return protos.ProcCPU{
+	cpuResult := protos.ProcCpu{
 		PitType: protos.EnumPitType_PROC_CPU,
 		Percent: float64(percent),
 	}
+	return protos.PitMessage{Message: &protos.PitMessage_ProcCpu{ProcCpu: &cpuResult}}
 }

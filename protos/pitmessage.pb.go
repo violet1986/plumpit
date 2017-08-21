@@ -8,8 +8,10 @@ It is generated from these files:
 	pitmessage.proto
 
 It has these top-level messages:
-	SystemCPU
-	ProcCPU
+	SystemCpu
+	ProcCpu
+	ProcMem
+	PitMessage
 */
 package protos
 
@@ -37,6 +39,7 @@ const (
 	EnumPitType_SYSTEM_MEMORY EnumPitType = 3
 	EnumPitType_PROC          EnumPitType = 10
 	EnumPitType_PROC_CPU      EnumPitType = 11
+	EnumPitType_PROC_MEM      EnumPitType = 12
 )
 
 var EnumPitType_name = map[int32]string{
@@ -46,6 +49,7 @@ var EnumPitType_name = map[int32]string{
 	3:  "SYSTEM_MEMORY",
 	10: "PROC",
 	11: "PROC_CPU",
+	12: "PROC_MEM",
 }
 var EnumPitType_value = map[string]int32{
 	"UNKNOWN":       0,
@@ -54,6 +58,7 @@ var EnumPitType_value = map[string]int32{
 	"SYSTEM_MEMORY": 3,
 	"PROC":          10,
 	"PROC_CPU":      11,
+	"PROC_MEM":      12,
 }
 
 func (x EnumPitType) String() string {
@@ -61,93 +66,295 @@ func (x EnumPitType) String() string {
 }
 func (EnumPitType) EnumDescriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
-type SystemCPU struct {
+type SystemCpu struct {
 	PitType EnumPitType `protobuf:"varint,1,opt,name=pit_type,json=pitType,enum=protos.EnumPitType" json:"pit_type,omitempty"`
 	User    uint64      `protobuf:"varint,2,opt,name=user" json:"user,omitempty"`
 	Sys     uint64      `protobuf:"varint,3,opt,name=sys" json:"sys,omitempty"`
 	Idle    uint64      `protobuf:"varint,4,opt,name=idle" json:"idle,omitempty"`
 }
 
-func (m *SystemCPU) Reset()                    { *m = SystemCPU{} }
-func (m *SystemCPU) String() string            { return proto.CompactTextString(m) }
-func (*SystemCPU) ProtoMessage()               {}
-func (*SystemCPU) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
+func (m *SystemCpu) Reset()                    { *m = SystemCpu{} }
+func (m *SystemCpu) String() string            { return proto.CompactTextString(m) }
+func (*SystemCpu) ProtoMessage()               {}
+func (*SystemCpu) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{0} }
 
-func (m *SystemCPU) GetPitType() EnumPitType {
+func (m *SystemCpu) GetPitType() EnumPitType {
 	if m != nil {
 		return m.PitType
 	}
 	return EnumPitType_UNKNOWN
 }
 
-func (m *SystemCPU) GetUser() uint64 {
+func (m *SystemCpu) GetUser() uint64 {
 	if m != nil {
 		return m.User
 	}
 	return 0
 }
 
-func (m *SystemCPU) GetSys() uint64 {
+func (m *SystemCpu) GetSys() uint64 {
 	if m != nil {
 		return m.Sys
 	}
 	return 0
 }
 
-func (m *SystemCPU) GetIdle() uint64 {
+func (m *SystemCpu) GetIdle() uint64 {
 	if m != nil {
 		return m.Idle
 	}
 	return 0
 }
 
-type ProcCPU struct {
+type ProcCpu struct {
 	PitType EnumPitType `protobuf:"varint,1,opt,name=pit_type,json=pitType,enum=protos.EnumPitType" json:"pit_type,omitempty"`
 	Percent float64     `protobuf:"fixed64,2,opt,name=percent" json:"percent,omitempty"`
 }
 
-func (m *ProcCPU) Reset()                    { *m = ProcCPU{} }
-func (m *ProcCPU) String() string            { return proto.CompactTextString(m) }
-func (*ProcCPU) ProtoMessage()               {}
-func (*ProcCPU) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
+func (m *ProcCpu) Reset()                    { *m = ProcCpu{} }
+func (m *ProcCpu) String() string            { return proto.CompactTextString(m) }
+func (*ProcCpu) ProtoMessage()               {}
+func (*ProcCpu) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{1} }
 
-func (m *ProcCPU) GetPitType() EnumPitType {
+func (m *ProcCpu) GetPitType() EnumPitType {
 	if m != nil {
 		return m.PitType
 	}
 	return EnumPitType_UNKNOWN
 }
 
-func (m *ProcCPU) GetPercent() float64 {
+func (m *ProcCpu) GetPercent() float64 {
 	if m != nil {
 		return m.Percent
 	}
 	return 0
 }
 
+type ProcMem struct {
+	PitType EnumPitType `protobuf:"varint,1,opt,name=pit_type,json=pitType,enum=protos.EnumPitType" json:"pit_type,omitempty"`
+	RSS     uint64      `protobuf:"varint,2,opt,name=RSS" json:"RSS,omitempty"`
+	VMS     uint64      `protobuf:"varint,3,opt,name=VMS" json:"VMS,omitempty"`
+	Swap    uint64      `protobuf:"varint,4,opt,name=Swap" json:"Swap,omitempty"`
+}
+
+func (m *ProcMem) Reset()                    { *m = ProcMem{} }
+func (m *ProcMem) String() string            { return proto.CompactTextString(m) }
+func (*ProcMem) ProtoMessage()               {}
+func (*ProcMem) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{2} }
+
+func (m *ProcMem) GetPitType() EnumPitType {
+	if m != nil {
+		return m.PitType
+	}
+	return EnumPitType_UNKNOWN
+}
+
+func (m *ProcMem) GetRSS() uint64 {
+	if m != nil {
+		return m.RSS
+	}
+	return 0
+}
+
+func (m *ProcMem) GetVMS() uint64 {
+	if m != nil {
+		return m.VMS
+	}
+	return 0
+}
+
+func (m *ProcMem) GetSwap() uint64 {
+	if m != nil {
+		return m.Swap
+	}
+	return 0
+}
+
+type PitMessage struct {
+	// Types that are valid to be assigned to Message:
+	//	*PitMessage_SystemCpu
+	//	*PitMessage_ProcCpu
+	//	*PitMessage_ProcMem
+	Message isPitMessage_Message `protobuf_oneof:"message"`
+}
+
+func (m *PitMessage) Reset()                    { *m = PitMessage{} }
+func (m *PitMessage) String() string            { return proto.CompactTextString(m) }
+func (*PitMessage) ProtoMessage()               {}
+func (*PitMessage) Descriptor() ([]byte, []int) { return fileDescriptor0, []int{3} }
+
+type isPitMessage_Message interface {
+	isPitMessage_Message()
+}
+
+type PitMessage_SystemCpu struct {
+	SystemCpu *SystemCpu `protobuf:"bytes,1,opt,name=system_cpu,json=systemCpu,oneof"`
+}
+type PitMessage_ProcCpu struct {
+	ProcCpu *ProcCpu `protobuf:"bytes,2,opt,name=proc_cpu,json=procCpu,oneof"`
+}
+type PitMessage_ProcMem struct {
+	ProcMem *ProcMem `protobuf:"bytes,3,opt,name=proc_mem,json=procMem,oneof"`
+}
+
+func (*PitMessage_SystemCpu) isPitMessage_Message() {}
+func (*PitMessage_ProcCpu) isPitMessage_Message()   {}
+func (*PitMessage_ProcMem) isPitMessage_Message()   {}
+
+func (m *PitMessage) GetMessage() isPitMessage_Message {
+	if m != nil {
+		return m.Message
+	}
+	return nil
+}
+
+func (m *PitMessage) GetSystemCpu() *SystemCpu {
+	if x, ok := m.GetMessage().(*PitMessage_SystemCpu); ok {
+		return x.SystemCpu
+	}
+	return nil
+}
+
+func (m *PitMessage) GetProcCpu() *ProcCpu {
+	if x, ok := m.GetMessage().(*PitMessage_ProcCpu); ok {
+		return x.ProcCpu
+	}
+	return nil
+}
+
+func (m *PitMessage) GetProcMem() *ProcMem {
+	if x, ok := m.GetMessage().(*PitMessage_ProcMem); ok {
+		return x.ProcMem
+	}
+	return nil
+}
+
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*PitMessage) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _PitMessage_OneofMarshaler, _PitMessage_OneofUnmarshaler, _PitMessage_OneofSizer, []interface{}{
+		(*PitMessage_SystemCpu)(nil),
+		(*PitMessage_ProcCpu)(nil),
+		(*PitMessage_ProcMem)(nil),
+	}
+}
+
+func _PitMessage_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*PitMessage)
+	// message
+	switch x := m.Message.(type) {
+	case *PitMessage_SystemCpu:
+		b.EncodeVarint(1<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.SystemCpu); err != nil {
+			return err
+		}
+	case *PitMessage_ProcCpu:
+		b.EncodeVarint(2<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.ProcCpu); err != nil {
+			return err
+		}
+	case *PitMessage_ProcMem:
+		b.EncodeVarint(3<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.ProcMem); err != nil {
+			return err
+		}
+	case nil:
+	default:
+		return fmt.Errorf("PitMessage.Message has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _PitMessage_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*PitMessage)
+	switch tag {
+	case 1: // message.system_cpu
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(SystemCpu)
+		err := b.DecodeMessage(msg)
+		m.Message = &PitMessage_SystemCpu{msg}
+		return true, err
+	case 2: // message.proc_cpu
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(ProcCpu)
+		err := b.DecodeMessage(msg)
+		m.Message = &PitMessage_ProcCpu{msg}
+		return true, err
+	case 3: // message.proc_mem
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(ProcMem)
+		err := b.DecodeMessage(msg)
+		m.Message = &PitMessage_ProcMem{msg}
+		return true, err
+	default:
+		return false, nil
+	}
+}
+
+func _PitMessage_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*PitMessage)
+	// message
+	switch x := m.Message.(type) {
+	case *PitMessage_SystemCpu:
+		s := proto.Size(x.SystemCpu)
+		n += proto.SizeVarint(1<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *PitMessage_ProcCpu:
+		s := proto.Size(x.ProcCpu)
+		n += proto.SizeVarint(2<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case *PitMessage_ProcMem:
+		s := proto.Size(x.ProcMem)
+		n += proto.SizeVarint(3<<3 | proto.WireBytes)
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
+}
+
 func init() {
-	proto.RegisterType((*SystemCPU)(nil), "protos.SystemCPU")
-	proto.RegisterType((*ProcCPU)(nil), "protos.ProcCPU")
+	proto.RegisterType((*SystemCpu)(nil), "protos.SystemCpu")
+	proto.RegisterType((*ProcCpu)(nil), "protos.ProcCpu")
+	proto.RegisterType((*ProcMem)(nil), "protos.ProcMem")
+	proto.RegisterType((*PitMessage)(nil), "protos.PitMessage")
 	proto.RegisterEnum("protos.EnumPitType", EnumPitType_name, EnumPitType_value)
 }
 
 func init() { proto.RegisterFile("pitmessage.proto", fileDescriptor0) }
 
 var fileDescriptor0 = []byte{
-	// 236 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x90, 0xb1, 0x6a, 0xc3, 0x30,
-	0x10, 0x86, 0xab, 0xd8, 0xc4, 0xee, 0xb9, 0x0d, 0xea, 0x75, 0xd1, 0x18, 0x32, 0x85, 0x0e, 0x1e,
-	0xda, 0x47, 0x30, 0x9e, 0x8a, 0x6d, 0x21, 0xc7, 0x94, 0x4c, 0x21, 0x4d, 0x8f, 0x62, 0xa8, 0x63,
-	0x61, 0xc9, 0x83, 0xdf, 0xbe, 0x48, 0x6a, 0xa1, 0x73, 0xa7, 0xfb, 0xfe, 0xe3, 0x3b, 0x7e, 0x38,
-	0xe0, 0xba, 0xb7, 0x03, 0x19, 0x73, 0xfe, 0xa4, 0x5c, 0x4f, 0xa3, 0x1d, 0x71, 0xed, 0x87, 0xd9,
-	0xcd, 0x70, 0xdb, 0x2e, 0xc6, 0xd2, 0x50, 0xc8, 0x0e, 0x73, 0x48, 0x75, 0x6f, 0x4f, 0x76, 0xd1,
-	0x24, 0xd8, 0x96, 0xed, 0x37, 0xcf, 0x8f, 0x41, 0x37, 0x79, 0x79, 0x9d, 0x07, 0xd9, 0xdb, 0xc3,
-	0xa2, 0x49, 0x25, 0x3a, 0x00, 0x22, 0xc4, 0xb3, 0xa1, 0x49, 0xac, 0xb6, 0x6c, 0x1f, 0x2b, 0xcf,
-	0xc8, 0x21, 0x32, 0x8b, 0x11, 0x91, 0x5f, 0x39, 0x74, 0x56, 0xff, 0xf1, 0x45, 0x22, 0x0e, 0x96,
-	0xe3, 0x5d, 0x0b, 0x89, 0x9c, 0xc6, 0xcb, 0x7f, 0x4a, 0x05, 0x24, 0x9a, 0xa6, 0x0b, 0x5d, 0xad,
-	0xef, 0x65, 0xea, 0x37, 0x3e, 0x9d, 0x21, 0xfb, 0x73, 0x81, 0x19, 0x24, 0x5d, 0xfd, 0x5a, 0x37,
-	0x6f, 0x35, 0xbf, 0x41, 0x80, 0x75, 0x7b, 0x6c, 0x0f, 0x65, 0xc5, 0x19, 0x6e, 0x00, 0x02, 0x9f,
-	0x0a, 0xd9, 0xf1, 0x15, 0x3e, 0xc0, 0xfd, 0x4f, 0xae, 0xca, 0xaa, 0x51, 0x47, 0x1e, 0x61, 0x0a,
-	0xb1, 0x54, 0x4d, 0xc1, 0x01, 0xef, 0x20, 0x75, 0xe4, 0xd5, 0xec, 0x3d, 0xbc, 0xed, 0xe5, 0x3b,
-	0x00, 0x00, 0xff, 0xff, 0xb9, 0x9b, 0xcd, 0x8c, 0x51, 0x01, 0x00, 0x00,
+	// 353 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x92, 0xc1, 0x6a, 0xe3, 0x30,
+	0x18, 0x84, 0xe3, 0xd8, 0xc4, 0xce, 0xef, 0x6c, 0x56, 0xd1, 0x5e, 0x7c, 0x0c, 0x3e, 0x85, 0x65,
+	0xc9, 0x21, 0xfb, 0x06, 0x0d, 0x86, 0x40, 0x51, 0x62, 0xa4, 0x24, 0x25, 0xa7, 0x90, 0xba, 0xa2,
+	0x18, 0xaa, 0x58, 0xb5, 0x64, 0x8a, 0x9f, 0xa8, 0xaf, 0x59, 0x24, 0x5b, 0xa1, 0xf4, 0xd6, 0x9e,
+	0xfc, 0xfd, 0x62, 0x7e, 0x8d, 0x67, 0x6c, 0x40, 0xb2, 0xd4, 0x82, 0x2b, 0x75, 0x79, 0xe6, 0x4b,
+	0x59, 0x57, 0xba, 0xc2, 0x23, 0xfb, 0x50, 0x69, 0x03, 0x63, 0xd6, 0x2a, 0xcd, 0xc5, 0x5a, 0x36,
+	0x78, 0x09, 0x91, 0x2c, 0xf5, 0x59, 0xb7, 0x92, 0x27, 0xde, 0xdc, 0x5b, 0x4c, 0x57, 0x7f, 0x3a,
+	0xb9, 0x5a, 0x66, 0xd7, 0x46, 0xe4, 0xa5, 0xde, 0xb7, 0x92, 0xd3, 0x50, 0x76, 0x80, 0x31, 0x04,
+	0x8d, 0xe2, 0x75, 0x32, 0x9c, 0x7b, 0x8b, 0x80, 0x5a, 0xc6, 0x08, 0x7c, 0xd5, 0xaa, 0xc4, 0xb7,
+	0x47, 0x06, 0x8d, 0xaa, 0x7c, 0x7a, 0xe1, 0x49, 0xd0, 0xa9, 0x0c, 0xa7, 0x0c, 0xc2, 0xbc, 0xae,
+	0x8a, 0x9f, 0x98, 0x26, 0x10, 0x4a, 0x5e, 0x17, 0xfc, 0xaa, 0xad, 0xaf, 0x47, 0xdd, 0x98, 0xbe,
+	0x76, 0x97, 0x12, 0x2e, 0xbe, 0x7d, 0x29, 0x02, 0x9f, 0x32, 0xd6, 0x07, 0x31, 0x68, 0x4e, 0x8e,
+	0x84, 0xb9, 0x1c, 0x47, 0xc2, 0x4c, 0x0e, 0xf6, 0x76, 0x91, 0x2e, 0x87, 0xe1, 0xf4, 0xdd, 0x03,
+	0xc8, 0x4b, 0x4d, 0xba, 0x6e, 0xf1, 0x0a, 0x40, 0xd9, 0x36, 0xcf, 0x85, 0x6c, 0xac, 0x71, 0xbc,
+	0x9a, 0x39, 0xe3, 0x5b, 0xcf, 0x9b, 0x01, 0x1d, 0xab, 0x5b, 0xe9, 0xff, 0x20, 0x92, 0x75, 0x55,
+	0xd8, 0x8d, 0xa1, 0xdd, 0xf8, 0xed, 0x36, 0xfa, 0x8a, 0x36, 0x03, 0x1a, 0xca, 0xbe, 0x2d, 0xa7,
+	0x16, 0x5c, 0xd8, 0x77, 0xfb, 0xa2, 0x26, 0x5c, 0x38, 0x35, 0xe1, 0xe2, 0x6e, 0x0c, 0x61, 0xff,
+	0xd9, 0xff, 0x56, 0x10, 0x7f, 0x4a, 0x8e, 0x63, 0x08, 0x0f, 0xdb, 0xfb, 0xed, 0xee, 0x61, 0x8b,
+	0x06, 0x18, 0x60, 0xc4, 0x4e, 0x6c, 0x9f, 0x11, 0xe4, 0xe1, 0x29, 0x40, 0xc7, 0xe7, 0x75, 0x7e,
+	0x40, 0x43, 0x3c, 0x83, 0x5f, 0xfd, 0x4c, 0x32, 0xb2, 0xa3, 0x27, 0xe4, 0xe3, 0x08, 0x82, 0x9c,
+	0xee, 0xd6, 0x08, 0xf0, 0x04, 0x22, 0x43, 0x56, 0x1a, 0xdf, 0x26, 0x92, 0x11, 0x34, 0x79, 0xec,
+	0xfe, 0xb0, 0xff, 0x1f, 0x01, 0x00, 0x00, 0xff, 0xff, 0xc6, 0xb8, 0xca, 0xae, 0x7c, 0x02, 0x00,
+	0x00,
 }

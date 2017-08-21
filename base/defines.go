@@ -9,13 +9,11 @@ type RawPit interface {
 	Husk()
 }
 
-type PitMessage interface {
-	Append(interface{}) PitMessage
-}
 type Source interface{}
 type SystemSource interface {
-	GetSystemCPU() protos.SystemCPU
+	GetSystemCpu() protos.PitMessage
 }
 type ProcSource interface {
-	GetProcCPU(duration interface{}) protos.ProcCPU
+	GetProcCpu(duration interface{}) protos.PitMessage
+	GetProcMem() protos.PitMessage
 }

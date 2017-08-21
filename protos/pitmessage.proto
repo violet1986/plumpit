@@ -7,16 +7,32 @@ enum EnumPitType {
     SYSTEM_MEMORY = 3;
     PROC = 10;
     PROC_CPU = 11;
+    PROC_MEM = 12;
   }   
 
-message SystemCPU {
+message SystemCpu {
     EnumPitType pit_type = 1;
     uint64 user = 2;
     uint64 sys = 3;
     uint64 idle = 4;
 }
 
-message ProcCPU {
+message ProcCpu {
     EnumPitType pit_type = 1;
     double percent = 2;
+}
+
+message ProcMem {
+    EnumPitType pit_type = 1;
+    uint64 RSS = 2;
+    uint64 VMS = 3;
+    uint64 Swap = 4;
+}
+
+message PitMessage {
+    oneof message {
+        SystemCpu system_cpu = 1;
+        ProcCpu proc_cpu = 2;
+        ProcMem proc_mem = 3;        
+    }
 }
