@@ -1,0 +1,12 @@
+syntax = "proto3";
+package protos;
+import "pitmessage.proto";
+enum EnumReturnCode {
+    OK = 0;
+}
+message Response {
+    EnumReturnCode code = 1;
+}
+service Packer {
+    rpc AddPitMessage(PitMessage) returns(Response);
+}

@@ -1,4 +1,4 @@
-package querypit
+package base
 
 // DistributedNodeKey represent a node index
 type DistributedNodeKey struct {
@@ -10,7 +10,7 @@ type DistributedNodeKey struct {
 // DistributedNode represent a node executed in segment/process
 type DistributedNode struct {
 	Key           DistributedNodeKey
-	InstruMetrics Instrument
+	InstruMetrics RawPlumInstrument
 }
 
 // PlanNodeMetrics represents the general planned information of a plan node

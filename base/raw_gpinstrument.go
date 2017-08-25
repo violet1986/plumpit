@@ -1,11 +1,12 @@
-package querypit 
+package base
 
 type instrTime [16]byte
+type SharedMemoryInfo uint64
 
 // Instrument represents a Instrumentation struct in Greenplum
-type Instrument struct {
+type RawPlumInstrument struct {
 	Key           *DistributedNodeKey
-	ShmemID       int
+	ShmemID       SharedMemoryInfo
 	Running       bool    `json:"Running"`
 	FirstTuple    float64 `json:"FirstTuple"`
 	TupleCount    float64 `json:"TupleCount"`
