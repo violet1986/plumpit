@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"net"
 	"plumpit/base"
+	"unsafe"
 )
 
 type UdpSource struct {
@@ -39,15 +40,21 @@ func (s UdpSource) Run(args ...interface{}) error {
 		//msg.ToPitMessage()
 	}
 }
+func getSubUnmarshallerForGpmonPkt(pkttype int, args ...interface{}) base.Unmarshaller {
+	switch pkttype {
+	default:
+		return func([]byte) (base.RawMessage, error) {
+			return nil, nil
+		}
+	}
+}
 
 func udpUnmarshallerForGpmonPkt(buf []byte) (base.RawMessage, error) {
-	p := GpmonPacket{}
-	err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &p)
+	prefix := GpmonPacket{}
+	err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &prefix)
 	if err != nil {
 		return nil, err
 	}
-	switch p.Pkttype {
-
-	}
-	return nil, nil
+	realPacketUnpaker := getSubUnmarshallerForGpmonPkt(int(prefix.Pkttype))
+	return realPacketUnpaker(buf[unsafe.Sizeof(prefix):len(buf)])
 }
