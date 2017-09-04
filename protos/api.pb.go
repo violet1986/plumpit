@@ -8,17 +8,19 @@ It is generated from these files:
 	api.proto
 	pitmessage.proto
 	query.proto
+	system.proto
 
 It has these top-level messages:
 	Response
-	SystemCpu
-	ProcCpuPercent
-	ProcMemPercent
-	ProcMemInfo
 	PitMessage
 	PitMessageBox
 	DistributedNodeKey
 	PlumInstrument
+	QueryInfo
+	SystemCpu
+	ProcCpuPercent
+	ProcMemPercent
+	ProcMemInfo
 */
 package protos
 

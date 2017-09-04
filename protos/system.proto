@@ -1,0 +1,24 @@
+syntax = "proto3";
+package protos;
+
+message SystemCpu {
+    uint64 user = 2;
+    uint64 sys = 3;
+    uint64 idle = 4;
+}
+
+message ProcCpuPercent {
+    int32 pid = 1;
+    double percent = 2;
+}
+
+message ProcMemPercent {
+    int32 pid = 1;
+    double percent = 2;
+}
+message ProcMemInfo {
+    int32 pid = 1;
+    uint64 RSS = 2;
+    uint64 VMS = 3;
+    uint64 Swap = 4;
+}

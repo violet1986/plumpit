@@ -34,3 +34,10 @@ type PlumQuery struct {
 	QueryStatus int          `json:"status"`
 	QueryPlan   PlumPlanNode `json:"plan"`
 }
+
+const (
+	GpmonPktTypeNone = iota
+	GpmonPktTypeHello
+	GpmonPktTypeMetrics
+	GpmonPktTypeQlog
+)

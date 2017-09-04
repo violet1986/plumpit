@@ -3,6 +3,7 @@ package querypit
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"net"
 	"plumpit/base"
 	"unsafe"
@@ -33,20 +34,25 @@ func (s UdpSource) Run(args ...interface{}) error {
 	}
 	defer s.conn.Close()
 	for {
-		_, err := s.GetRawMessage(udpUnmarshallerForGpmonPkt)
+		msg, err := s.GetRawMessage(udpUnmarshallerForGpmonPkt)
+		// error should return?
 		if err != nil {
 			return err
 		}
-		//msg.ToPitMessage()
-	}
-}
-func getSubUnmarshallerForGpmonPkt(pkttype int, args ...interface{}) base.Unmarshaller {
-	switch pkttype {
-	default:
-		return func([]byte) (base.RawMessage, error) {
-			return nil, nil
+		if msg != nil {
+			msg.ToPitMessage()
 		}
 	}
+}
+func contentUnmarshallerForGpmonPkt(pkttype int, buf []byte) (base.RawMessage, error) {
+	switch pkttype {
+	case base.GpmonPktTypeQlog:
+		pack := GpmonQlog{}
+		err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &pack)
+		return pack, err
+	default:
+	}
+	return nil, nil
 }
 
 func udpUnmarshallerForGpmonPkt(buf []byte) (base.RawMessage, error) {
@@ -55,6 +61,8 @@ func udpUnmarshallerForGpmonPkt(buf []byte) (base.RawMessage, error) {
 	if err != nil {
 		return nil, err
 	}
-	realPacketUnpaker := getSubUnmarshallerForGpmonPkt(int(prefix.Pkttype))
-	return realPacketUnpaker(buf[unsafe.Sizeof(prefix):len(buf)])
+	if prefix.Pkttype != 5 {
+		fmt.Printf("%+v\n", prefix)
+	}
+	return contentUnmarshallerForGpmonPkt(int(prefix.Pkttype), buf[unsafe.Sizeof(prefix):len(buf)])
 }

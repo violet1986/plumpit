@@ -1,7 +1,7 @@
 package base
 
 type instrTime [16]byte
-type SharedMemoryInfo uint64
+type SharedMemoryInfo uint32
 
 // Instrument represents a Instrumentation struct in Greenplum
 type RawPlumInstrument struct {

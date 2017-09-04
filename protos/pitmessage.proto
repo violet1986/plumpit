@@ -1,5 +1,7 @@
 syntax = "proto3";
 package protos;
+import "system.proto";
+import "query.proto";
 enum EnumPitType {
     UNKNOWN = 0;
     SYSTEM = 1;
@@ -9,29 +11,10 @@ enum EnumPitType {
     PROC_CPU_PERCENT = 11;
     PROC_MEM_INFO = 12;
     PROC_MEM_PERCENT=13;
-  }   
 
-message SystemCpu {
-    uint64 user = 2;
-    uint64 sys = 3;
-    uint64 idle = 4;
-}
+    QUERY_INFO = 14;
+ }   
 
-message ProcCpuPercent {
-    int32 pid = 1;
-    double percent = 2;
-}
-
-message ProcMemPercent {
-    int32 pid = 1;
-    double percent = 2;
-}
-message ProcMemInfo {
-    int32 pid = 1;
-    uint64 RSS = 2;
-    uint64 VMS = 3;
-    uint64 Swap = 4;
-}
 
 message PitMessage {
     EnumPitType pit_type = 1;
@@ -39,7 +22,8 @@ message PitMessage {
         SystemCpu system_cpu = 2;
         ProcCpuPercent proc_cpu_percent = 3;
         ProcMemInfo proc_mem_info = 4;
-        ProcMemPercent proc_mem_percent = 5;     
+        ProcMemPercent proc_mem_percent = 5;
+        QueryInfo query_info = 6;     
     }
 }
 

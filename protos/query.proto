@@ -1,5 +1,6 @@
 syntax = "proto3";
 package protos;
+import "google/protobuf/timestamp.proto";
 
 message DistributedNodeKey {
     int32 seg_id = 1;
@@ -19,4 +20,21 @@ message PlumInstrument {
     double exec_mem_used = 9;
     double work_mem_used = 10;
     double work_mem_wanted = 11;
+}
+enum EnumQueryStatus {
+    SILENT = 0;
+    SUBMIT = 1;
+    START = 2;
+    DONE = 3;
+    ERROR = 4;
+    CANCELING = 5;
+}
+message QueryInfo {
+    string query_id = 1;
+    string database = 2;
+    string user = 3;
+    google.protobuf.Timestamp submit_time = 4;
+    google.protobuf.Timestamp start_time = 5;
+    google.protobuf.Timestamp finish_time = 6;
+    EnumQueryStatus status = 7;
 }
