@@ -38,7 +38,7 @@ type GpmonQlog struct {
 	SharedMemory          base.SharedMemoryInfo
 }
 
-type GpmonQExecKey struct {
+type GpmonQexecKey struct {
 	QKey  GpmonQlogKey
 	SegID int16
 	Dummy int16
@@ -46,26 +46,24 @@ type GpmonQExecKey struct {
 	NID   int32
 }
 
-// GpmonQExec is the mirror type for gpmon_qexec_t in GPDB.
+// GpmonQexec is the mirror type for gpmon_qexec_t in GPDB.
 type GpmonQexec struct {
-	Key        GpmonQExecKey
-	Hname      NameData
-	Status     uint16
-	CPUElapsed uint64
-	PMetrics   GpmonProcMetrics
-	// TODO find out where should add this Dummy
-	Dummy                  [6]byte
+	Key                    GpmonQexecKey
+	Hname                  NameData
+	Status                 uint64
+	CPUElapsed             uint64
+	PMetrics               GpmonProcMetrics
 	Rowsout, Rowsin        uint64
 	StartupCost, TotalCost float64
 	PlanRows               float64
 	NodeType               int32
+	Dummy2                 [4]byte
 	Offset                 uint64
 }
 
 func (q GpmonQlog) ToPitMessage() (protos.PitMessage, error) {
 	query := protos.QueryInfo{}
 	// Do content transfer here
-	fmt.Println("shmid is", q.SharedMemory)
 	return protos.PitMessage{
 		PitType: protos.EnumPitType_QUERY_INFO,
 		Message: &protos.PitMessage_QueryInfo{
@@ -73,10 +71,26 @@ func (q GpmonQlog) ToPitMessage() (protos.PitMessage, error) {
 		},
 	}, nil
 }
-
+func GetQueryIdString(k GpmonQlogKey) string {
+	return fmt.Sprintf("%d-%d-%d", k.Tmid, k.Ssid, k.Ccnt)
+}
 func (q GpmonQexec) ToPitMessage() (protos.PitMessage, error) {
-	exec := protos.ExecInfo{}
-	fmt.Println(&q.Key.QKey.Tmid, q.Rowsout, q.StartupCost, &q.StartupCost, q.PlanRows, &q.PlanRows, q.NodeType, &q.NodeType, q.Offset, &q.Offset)
+	exec := protos.ExecInfo{
+		QueryId: GetQueryIdString(q.Key.QKey),
+		NodeKey: &protos.DistributedNodeKey{
+			SegId:  int32(q.Key.SegID),
+			ProcId: q.Key.PID,
+			NodeId: q.Key.NID,
+		},
+		Status:      protos.EnumNodeStatus(q.Status),
+		PlanRows:    q.PlanRows,
+		NodeType:    q.NodeType,
+		StartupCost: q.StartupCost,
+		TotalCost:   q.TotalCost,
+	}
+	fmt.Printf("%+v\n", exec)
+	fmt.Println(q.Offset)
+	fmt.Println(exec.NodeKey.SegId)
 	return protos.PitMessage{
 		PitType: protos.EnumPitType_EXEC_INFO,
 		Message: &protos.PitMessage_ExecInfo{

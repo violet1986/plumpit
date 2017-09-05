@@ -3,8 +3,6 @@ package querypit
 import (
 	"bytes"
 	"encoding/binary"
-	"encoding/hex"
-	"fmt"
 	"net"
 	"plumpit/base"
 	"unsafe"
@@ -54,7 +52,7 @@ func contentUnmarshallerForGpmonPkt(pkttype int, buf []byte) (base.RawMessage, e
 
 	case base.GpmonPktTypeQexec:
 		pack := GpmonQexec{}
-		fmt.Println(hex.Dump(buf))
+		//fmt.Println(hex.Dump(buf))
 		err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &pack)
 		return pack, err
 	default:
@@ -68,9 +66,6 @@ func udpUnmarshallerForGpmonPkt(buf []byte) (base.RawMessage, error) {
 	err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &prefix)
 	if err != nil {
 		return nil, err
-	}
-	if prefix.Pkttype != 5 {
-		fmt.Printf("%+v, %d\n", prefix, unsafe.Sizeof(prefix))
 	}
 	return contentUnmarshallerForGpmonPkt(int(prefix.Pkttype), buf[unsafe.Sizeof(prefix):len(buf)])
 }
