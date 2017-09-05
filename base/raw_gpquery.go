@@ -40,4 +40,5 @@ const (
 	GpmonPktTypeHello
 	GpmonPktTypeMetrics
 	GpmonPktTypeQlog
+	GpmonPktTypeQexec
 )

@@ -22,12 +22,17 @@ message PlumInstrument {
     double work_mem_wanted = 11;
 }
 enum EnumQueryStatus {
-    SILENT = 0;
-    SUBMIT = 1;
-    START = 2;
-    DONE = 3;
-    ERROR = 4;
-    CANCELING = 5;
+    QUERY_SILENT = 0;
+    QUERY_SUBMIT = 1;
+    QUERY_START = 2;
+    QUERY_DONE = 3;
+    QUERY_ERROR = 4;
+    QUERY_CANCELING = 5;
+}
+enum EnumNodeStatus {
+    NODE_INIT = 0;
+    NODE_START = 1;
+    NODE_DONE = 2;
 }
 message QueryInfo {
     string query_id = 1;
@@ -37,4 +42,13 @@ message QueryInfo {
     google.protobuf.Timestamp start_time = 5;
     google.protobuf.Timestamp finish_time = 6;
     EnumQueryStatus status = 7;
+}
+message ExecInfo {
+    string query_id = 1;
+    DistributedNodeKey node_key = 2;
+    EnumNodeStatus status = 3;
+    double startup_cost = 4;
+    double total_cost = 5;
+    double plan_rows = 6;
+    int32 node_type = 7;
 }

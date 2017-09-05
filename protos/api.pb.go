@@ -17,6 +17,7 @@ It has these top-level messages:
 	DistributedNodeKey
 	PlumInstrument
 	QueryInfo
+	ExecInfo
 	SystemCpu
 	ProcCpuPercent
 	ProcMemPercent
