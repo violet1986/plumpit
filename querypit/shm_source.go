@@ -9,16 +9,30 @@ import (
 )
 
 type GPShmSource struct {
-	ShmID   base.SharedMemoryInfo
-	Offsets map[base.DistributedNodeKey]uint64
+	ShmID             base.SharedMemoryInfo
+	InstrumentOffsets map[base.DistributedNodeKey]uint64
 	// A lock?
 }
 
-func (s GPShmSource) GetRawMessage(seg *shm.Segment, offset uint64) (base.RawMessage, error) {
+func (s GPShmSource) GetRawMessage(seg *shm.Segment, offset uint64, size uint64, unpacker base.Unmarshaller) (base.RawMessage, error) {
 	seg.Seek(int64(offset), 0)
-	instru := base.RawPlumInstrument{}
-	seg.Read(instru)
-	return nil, nil
+	buf := [size]byte{}
+	seg.Read(buf)
+	return unpacker(buf)
+}
+
+func UnpackShm(seg *shm.Segment, offsets map[interface{}]uint64) func(size uint64, base.Unmarshaller) {
+	return func(size uint64, unpacker base.Unmarshaller) {
+		for _, offset := range offsets {
+			msg, err := s.GetRawMessage(seg, offset, size, unpacker)
+			if err != nil {
+				continue
+			}
+			if msg != nil {
+				msg.ToPitMessage()
+			}
+		}
+	}
 }
 
 // Run of GPShmSource:
@@ -42,15 +56,10 @@ func (s GPShmSource) Run(args ...interface{}) error {
 	for {
 		select {
 		case <-ticker.C:
-			for _, offset := range s.Offsets {
-				instrumentMsg, err := s.GetRawMessage(seg, offset)
-				if err != nil {
-					continue
-				}
-				if instrumentMsg != nil {
-					instrumentMsg.ToPitMessage()
-				}
-			}
+			instruHandler := UnpackShm(seg, s.InstrumentOffsets)
+			instruHandler(unsafe.Sizeof(base.RawPlumInstrument), func(b []byte) (RawMessage, error) {
+				
+			})
 		case <-quit:
 			ticker.Stop()
 			return nil
