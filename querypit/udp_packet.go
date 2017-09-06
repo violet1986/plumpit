@@ -88,9 +88,6 @@ func (q GpmonQexec) ToPitMessage() (protos.PitMessage, error) {
 		StartupCost: q.StartupCost,
 		TotalCost:   q.TotalCost,
 	}
-	fmt.Printf("%+v\n", exec)
-	fmt.Println(q.Offset)
-	fmt.Println(exec.NodeKey.SegId)
 	return protos.PitMessage{
 		PitType: protos.EnumPitType_EXEC_INFO,
 		Message: &protos.PitMessage_ExecInfo{

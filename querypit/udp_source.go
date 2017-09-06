@@ -52,7 +52,6 @@ func contentUnmarshallerForGpmonPkt(pkttype int, buf []byte) (base.RawMessage, e
 
 	case base.GpmonPktTypeQexec:
 		pack := GpmonQexec{}
-		//fmt.Println(hex.Dump(buf))
 		err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &pack)
 		return pack, err
 	default:

@@ -7,7 +7,6 @@ type SharedMemoryOffset uint64
 // Instrument represents a Instrumentation struct in Greenplum
 type RawPlumInstrument struct {
 	Key           *DistributedNodeKey
-	ShmemID       SharedMemoryInfo
 	Running       bool    `json:"Running"`
 	FirstTuple    float64 `json:"FirstTuple"`
 	TupleCount    float64 `json:"TupleCount"`
