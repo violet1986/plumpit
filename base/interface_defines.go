@@ -27,3 +27,7 @@ type ActiveSourceServer interface {
 	Run(args ...interface{}) error
 	GetRawMessage(Unmarshaller) (RawMessage, error)
 }
+
+type MapKey interface {
+	GetHashKeyString() string
+}

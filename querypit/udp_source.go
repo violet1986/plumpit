@@ -45,12 +45,12 @@ func (s UdpSource) Run(args ...interface{}) error {
 }
 func contentUnmarshallerForGpmonPkt(pkttype int, buf []byte) (base.RawMessage, error) {
 	switch pkttype {
-	case base.GpmonPktTypeQlog:
+	case GpmonPktTypeQlog:
 		pack := GpmonQlog{}
 		err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &pack)
 		return pack, err
 
-	case base.GpmonPktTypeQexec:
+	case GpmonPktTypeQexec:
 		pack := GpmonQexec{}
 		err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &pack)
 		return pack, err

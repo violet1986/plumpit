@@ -4,9 +4,18 @@ import (
 	"fmt"
 	"plumpit/base"
 	"plumpit/protos"
+	"time"
 )
 
 type NameData [64]byte
+
+const (
+	GpmonPktTypeNone = iota
+	GpmonPktTypeHello
+	GpmonPktTypeMetrics
+	GpmonPktTypeQlog
+	GpmonPktTypeQexec
+)
 
 type GpmonPacket struct {
 	Magic   int32
@@ -37,13 +46,19 @@ type GpmonQlog struct {
 	PMetrics              GpmonProcMetrics
 	SharedMemory          base.SharedMemoryInfo
 }
-
-type GpmonQexecKey struct {
-	QKey  GpmonQlogKey
+type GpmonNodeKey struct {
 	SegID int16
 	Dummy int16
 	PID   int32
 	NID   int32
+}
+type GpmonQexecKey struct {
+	QKey GpmonQlogKey
+	NKey GpmonNodeKey
+}
+
+func (k GpmonNodeKey) GetHashKeyString() string {
+	return fmt.Sprintf("%d-%d-%d", k.SegID, k.PID, k.NID)
 }
 
 // GpmonQexec is the mirror type for gpmon_qexec_t in GPDB.
@@ -58,10 +73,19 @@ type GpmonQexec struct {
 	PlanRows               float64
 	NodeType               int32
 	Dummy2                 [4]byte
-	Offset                 uint64
+	Offset                 int64
 }
 
 func (q GpmonQlog) ToPitMessage() (protos.PitMessage, error) {
+	if gShmSourceMap[q.SharedMemory] == nil {
+		shmSource := &GPShmSource{
+			ShmID:             q.SharedMemory,
+			InstrumentOffsets: map[string]int64{},
+		}
+		gShmSourceMap[q.SharedMemory] = shmSource
+		go shmSource.Run(time.Duration(5))
+	}
+	gRunningQueriesShmInfo[GetQueryIdString(q.Key)] = q.SharedMemory
 	query := protos.QueryInfo{}
 	// Do content transfer here
 	return protos.PitMessage{
@@ -75,13 +99,22 @@ func GetQueryIdString(k GpmonQlogKey) string {
 	return fmt.Sprintf("%d-%d-%d", k.Tmid, k.Ssid, k.Ccnt)
 }
 func (q GpmonQexec) ToPitMessage() (protos.PitMessage, error) {
+	queryid := GetQueryIdString(q.Key.QKey)
+	key := protos.DistributedNodeKey{
+		SegId:  int32(q.Key.NKey.SegID),
+		ProcId: q.Key.NKey.PID,
+		NodeId: q.Key.NKey.NID,
+	}
+	if q.Offset != 0 {
+		if shmid, ok := gRunningQueriesShmInfo[queryid]; ok {
+			shmSource := gShmSourceMap[shmid]
+
+			shmSource.InstrumentOffsets[q.Key.NKey.GetHashKeyString()] = q.Offset
+		}
+	}
 	exec := protos.ExecInfo{
-		QueryId: GetQueryIdString(q.Key.QKey),
-		NodeKey: &protos.DistributedNodeKey{
-			SegId:  int32(q.Key.SegID),
-			ProcId: q.Key.PID,
-			NodeId: q.Key.NID,
-		},
+		QueryId:     queryid,
+		NodeKey:     &key,
 		Status:      protos.EnumNodeStatus(q.Status),
 		PlanRows:    q.PlanRows,
 		NodeType:    q.NodeType,
