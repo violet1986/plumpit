@@ -13,7 +13,7 @@ type ProcessCollator struct {
 	procs map[int32]ProcessInfo
 }
 
-func (p *ProcessCollator) AddMessage(msg protos.PitMessage) error {
+func (p *ProcessCollator) AddMessage(msg protos.PitMessage) {
 	switch msg.PitType {
 	case protos.EnumPitType_INSTRUMENT_INFO:
 		instr := msg.GetInstrument()
@@ -23,5 +23,4 @@ func (p *ProcessCollator) AddMessage(msg protos.PitMessage) error {
 		p.procs[pid].info.Insight[nid] = instr
 		p.procs[pid].lock.Unlock()
 	}
-	return nil
 }

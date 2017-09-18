@@ -29,5 +29,5 @@ type MapKey interface {
 }
 
 type Collator interface {
-	AddMessage(protos.PitMessage) error
+	AddMessage(protos.PitMessage)
 }

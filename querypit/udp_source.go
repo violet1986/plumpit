@@ -50,7 +50,7 @@ func (s UdpSource) Run(args ...interface{}) error {
 		if msg != nil {
 			pit, err := msg.ToPitMessage()
 			if err == nil && msgCollator != nil {
-				msgCollator.AddMessage(pit)
+				go msgCollator.AddMessage(pit)
 			}
 		}
 	}
