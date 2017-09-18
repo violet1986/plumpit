@@ -1,0 +1,10 @@
+syntax = "proto3";
+package protos;
+import "system.proto";
+import "query.proto";
+
+message ProcessSamplingInfo {
+    int32 pid = 1;
+    ProcMemInfo proc_mem_info = 2;
+    map<int32, PlumInstrument> insight = 3;
+}

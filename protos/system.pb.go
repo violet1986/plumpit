@@ -21,7 +21,7 @@ type SystemCpu struct {
 func (m *SystemCpu) Reset()                    { *m = SystemCpu{} }
 func (m *SystemCpu) String() string            { return proto.CompactTextString(m) }
 func (*SystemCpu) ProtoMessage()               {}
-func (*SystemCpu) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{0} }
+func (*SystemCpu) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{0} }
 
 func (m *SystemCpu) GetUser() uint64 {
 	if m != nil {
@@ -52,7 +52,7 @@ type ProcCpuPercent struct {
 func (m *ProcCpuPercent) Reset()                    { *m = ProcCpuPercent{} }
 func (m *ProcCpuPercent) String() string            { return proto.CompactTextString(m) }
 func (*ProcCpuPercent) ProtoMessage()               {}
-func (*ProcCpuPercent) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{1} }
+func (*ProcCpuPercent) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{1} }
 
 func (m *ProcCpuPercent) GetPid() int32 {
 	if m != nil {
@@ -76,7 +76,7 @@ type ProcMemPercent struct {
 func (m *ProcMemPercent) Reset()                    { *m = ProcMemPercent{} }
 func (m *ProcMemPercent) String() string            { return proto.CompactTextString(m) }
 func (*ProcMemPercent) ProtoMessage()               {}
-func (*ProcMemPercent) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{2} }
+func (*ProcMemPercent) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{2} }
 
 func (m *ProcMemPercent) GetPid() int32 {
 	if m != nil {
@@ -102,7 +102,7 @@ type ProcMemInfo struct {
 func (m *ProcMemInfo) Reset()                    { *m = ProcMemInfo{} }
 func (m *ProcMemInfo) String() string            { return proto.CompactTextString(m) }
 func (*ProcMemInfo) ProtoMessage()               {}
-func (*ProcMemInfo) Descriptor() ([]byte, []int) { return fileDescriptor3, []int{3} }
+func (*ProcMemInfo) Descriptor() ([]byte, []int) { return fileDescriptor4, []int{3} }
 
 func (m *ProcMemInfo) GetPid() int32 {
 	if m != nil {
@@ -139,9 +139,9 @@ func init() {
 	proto.RegisterType((*ProcMemInfo)(nil), "protos.ProcMemInfo")
 }
 
-func init() { proto.RegisterFile("system.proto", fileDescriptor3) }
+func init() { proto.RegisterFile("system.proto", fileDescriptor4) }
 
-var fileDescriptor3 = []byte{
+var fileDescriptor4 = []byte{
 	// 192 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x29, 0xae, 0x2c, 0x2e,
 	0x49, 0xcd, 0xd5, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x03, 0x53, 0xc5, 0x4a, 0xae, 0x5c,

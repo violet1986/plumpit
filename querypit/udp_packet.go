@@ -2,9 +2,7 @@ package querypit
 
 import (
 	"fmt"
-	"plumpit/base"
 	"plumpit/protos"
-	"time"
 )
 
 type NameData [64]byte
@@ -15,6 +13,8 @@ const (
 	GpmonPktTypeMetrics
 	GpmonPktTypeQlog
 	GpmonPktTypeQexec
+	GpmonPktTypeSegInfo
+	GpmonPktTypeStat = 10
 )
 
 type GpmonPacket struct {
@@ -44,7 +44,6 @@ type GpmonQlog struct {
 	Cost                  int32
 	CPUElapsed            int64
 	PMetrics              GpmonProcMetrics
-	SharedMemory          base.SharedMemoryInfo
 }
 type GpmonNodeKey struct {
 	SegID int16
@@ -72,20 +71,9 @@ type GpmonQexec struct {
 	StartupCost, TotalCost float64
 	PlanRows               float64
 	NodeType               int32
-	Dummy2                 [4]byte
-	Offset                 int64
 }
 
 func (q GpmonQlog) ToPitMessage() (protos.PitMessage, error) {
-	if gShmSourceMap[q.SharedMemory] == nil {
-		shmSource := &GPShmSource{
-			ShmID:             q.SharedMemory,
-			InstrumentOffsets: map[string]int64{},
-		}
-		gShmSourceMap[q.SharedMemory] = shmSource
-		go shmSource.Run(time.Duration(5))
-	}
-	gRunningQueriesShmInfo[GetQueryIdString(q.Key)] = q.SharedMemory
 	query := protos.QueryInfo{}
 	// Do content transfer here
 	return protos.PitMessage{
@@ -105,13 +93,6 @@ func (q GpmonQexec) ToPitMessage() (protos.PitMessage, error) {
 		ProcId: q.Key.NKey.PID,
 		NodeId: q.Key.NKey.NID,
 	}
-	if q.Offset != 0 {
-		if shmid, ok := gRunningQueriesShmInfo[queryid]; ok {
-			shmSource := gShmSourceMap[shmid]
-
-			shmSource.InstrumentOffsets[q.Key.NKey.GetHashKeyString()] = q.Offset
-		}
-	}
 	exec := protos.ExecInfo{
 		QueryId:     queryid,
 		NodeKey:     &key,
@@ -127,4 +108,28 @@ func (q GpmonQexec) ToPitMessage() (protos.PitMessage, error) {
 			ExecInfo: &exec,
 		},
 	}, nil
+}
+
+type GpmonStat struct {
+	Running    bool
+	Dummy      byte
+	SegID      int16
+	PID        int32
+	NID        int32
+	Dummy2     [4]byte
+	TupleCount uint64
+	NTuples    uint64
+	NLoops     uint64
+	FirstTuple float64
+}
+
+const maxStatSize = 20
+
+type GpmonStats struct {
+	Length int64
+	Data   [maxStatSize]GpmonStat
+}
+
+func (s GpmonStats) ToPitMessage() (protos.PitMessage, error) {
+	return protos.PitMessage{}, nil
 }

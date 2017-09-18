@@ -11,16 +11,12 @@ message DistributedNodeKey {
 message PlumInstrument {
     DistributedNodeKey key = 1;
     bool running = 2;
-    double first_tuple = 3;
-    double tuple_count = 4;
-    double start_up = 5;
-    double total = 6;
-    double ntuples = 7;
-    double nloops = 8;
-    double exec_mem_used = 9;
-    double work_mem_used = 10;
-    double work_mem_wanted = 11;
+    uint64 tuple_count = 3;
+    uint64 ntuples = 4;
+    uint64 nloops = 5;
+    double first_tuple = 6;
 }
+
 enum EnumQueryStatus {
     QUERY_SILENT = 0;
     QUERY_SUBMIT = 1;

@@ -7,6 +7,7 @@ Package protos is a generated protocol buffer package.
 It is generated from these files:
 	api.proto
 	pitmessage.proto
+	process.proto
 	query.proto
 	system.proto
 
@@ -14,6 +15,7 @@ It has these top-level messages:
 	Response
 	PitMessage
 	PitMessageBox
+	ProcessSamplingInfo
 	DistributedNodeKey
 	PlumInstrument
 	QueryInfo

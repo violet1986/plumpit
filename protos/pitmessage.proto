@@ -2,6 +2,7 @@ syntax = "proto3";
 package protos;
 import "system.proto";
 import "query.proto";
+import "process.proto";
 enum EnumPitType {
     UNKNOWN = 0;
     SYSTEM = 1;
@@ -14,6 +15,8 @@ enum EnumPitType {
 
     QUERY_INFO = 14;
     EXEC_INFO = 15;
+    INSTRUMENT_INFO = 16;
+    PROCESS_INFO = 20;
  }   
 
 
@@ -25,7 +28,9 @@ message PitMessage {
         ProcMemInfo proc_mem_info = 4;
         ProcMemPercent proc_mem_percent = 5;
         QueryInfo query_info = 6;
-        ExecInfo exec_info = 7;     
+        ExecInfo exec_info = 7; 
+        PlumInstrument instrument = 8;
+        ProcessSamplingInfo proc_info = 9;    
     }
 }
 

@@ -18,10 +18,6 @@ type ProcSource interface {
 	GetProcMemPercent() (protos.PitMessage, error)
 }
 
-type InstrumentSource interface {
-	GetInstrumentInfo([]SharedMemoryOffset) (protos.PitMessage, error)
-}
-
 // ActiveSourceServer represent source that run standalone, receive query related message and then husk the message into PitMessage.
 type ActiveSourceServer interface {
 	Run(args ...interface{}) error
@@ -30,4 +26,8 @@ type ActiveSourceServer interface {
 
 type MapKey interface {
 	GetHashKeyString() string
+}
+
+type Collator interface {
+	AddMessage(protos.PitMessage) error
 }

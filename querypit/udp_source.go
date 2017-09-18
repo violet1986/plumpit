@@ -3,6 +3,7 @@ package querypit
 import (
 	"bytes"
 	"encoding/binary"
+	"fmt"
 	"net"
 	"plumpit/base"
 	"unsafe"
@@ -25,9 +26,17 @@ func (s UdpSource) GetRawMessage(unpacker base.Unmarshaller) (base.RawMessage, e
 
 // Run The run function for UdpSource
 // args[0]: address
+// args[1]: (optional) Collator
 func (s UdpSource) Run(args ...interface{}) error {
 	var err error
+	if len(args) < 1 {
+		return fmt.Errorf("no enough argument to run udp source")
+	}
 	s.conn, err = StartUDPServer(args[0].(string))
+	var msgCollator base.Collator
+	if len(args) > 1 {
+		msgCollator = args[1].(base.Collator)
+	}
 	if err != nil {
 		return err
 	}
@@ -39,7 +48,10 @@ func (s UdpSource) Run(args ...interface{}) error {
 			return err
 		}
 		if msg != nil {
-			msg.ToPitMessage()
+			pit, err := msg.ToPitMessage()
+			if err == nil && msgCollator != nil {
+				msgCollator.AddMessage(pit)
+			}
 		}
 	}
 }
@@ -49,9 +61,12 @@ func contentUnmarshallerForGpmonPkt(pkttype int, buf []byte) (base.RawMessage, e
 		pack := GpmonQlog{}
 		err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &pack)
 		return pack, err
-
 	case GpmonPktTypeQexec:
 		pack := GpmonQexec{}
+		err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &pack)
+		return pack, err
+	case GpmonPktTypeStat:
+		pack := GpmonStats{}
 		err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &pack)
 		return pack, err
 	default:
