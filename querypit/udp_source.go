@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"log"
 	"net"
 	"plumpit/base"
 	"unsafe"
@@ -26,46 +27,61 @@ func (s UdpSource) GetRawMessage(unpacker base.Unmarshaller) (base.RawMessage, e
 
 // Run The run function for UdpSource
 // args[0]: address
-// args[1]: (optional) Collator
+// args[1]: quit channel
+// args[2]: (optional) Collator
 func (s UdpSource) Run(args ...interface{}) error {
 	var err error
-	if len(args) < 1 {
+	if len(args) < 2 {
 		return fmt.Errorf("no enough argument to run udp source")
 	}
 	s.conn, err = StartUDPServer(args[0].(string))
+	if err != nil {
+		return err
+	}
+	log.Println("Start listening udp packets at", args[0].(string))
+	quit := args[1].(chan int)
 	var msgCollator base.Collator
-	if len(args) > 1 {
-		msgCollator = args[1].(base.Collator)
+	if len(args) > 2 {
+		msgCollator = args[2].(base.Collator)
 	}
 	if err != nil {
 		return err
 	}
 	defer s.conn.Close()
 	for {
-		msg, err := s.GetRawMessage(udpUnmarshallerForGpmonPkt)
-		// error should return?
-		if err != nil {
-			return err
-		}
-		if msg != nil {
-			pit, err := msg.ToPitMessage()
-			if err == nil && msgCollator != nil {
-				go msgCollator.AddMessage(pit)
+		select {
+		case command := <-quit:
+			fmt.Println(command)
+			if command > 0 {
+				log.Println("Quit command received, will quit now...")
+				return nil
+			}
+		default:
+			msg, err := s.GetRawMessage(udpUnmarshallerForGpmonPkt)
+			// error should return or ignore?
+			if err != nil {
+				return err
+			}
+			if msg != nil {
+				pit, err := msg.ToPitMessage()
+				if err == nil && msgCollator != nil {
+					go msgCollator.AddMessage(pit)
+				}
 			}
 		}
 	}
 }
 func contentUnmarshallerForGpmonPkt(pkttype int, buf []byte) (base.RawMessage, error) {
 	switch pkttype {
-	case GpmonPktTypeQlog:
+	case gpmonPktTypeQlog:
 		pack := GpmonQlog{}
 		err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &pack)
 		return pack, err
-	case GpmonPktTypeQexec:
+	case gpmonPktTypeQexec:
 		pack := GpmonQexec{}
 		err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &pack)
 		return pack, err
-	case GpmonPktTypeStat:
+	case gpmonPktTypeStat:
 		pack := GpmonStats{}
 		err := binary.Read(bytes.NewBuffer(buf), binary.LittleEndian, &pack)
 		return pack, err

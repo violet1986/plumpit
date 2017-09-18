@@ -5,29 +5,34 @@ import (
 	"plumpit/protos"
 )
 
+// NameData is for the char[] type in C.
 type NameData [64]byte
 
 const (
-	GpmonPktTypeNone = iota
-	GpmonPktTypeHello
-	GpmonPktTypeMetrics
-	GpmonPktTypeQlog
-	GpmonPktTypeQexec
-	GpmonPktTypeSegInfo
-	GpmonPktTypeStat = 10
+	gpmonPktTypeNone = iota
+	gpmonPktTypeHello
+	gpmonPktTypeMetrics
+	gpmonPktTypeQlog
+	gpmonPktTypeQexec
+	gpmonPktTypeSegInfo
+	gpmonPktTypeStat = 10
 )
 
+// GpmonPacket is the head part of all UDP packet
 type GpmonPacket struct {
 	Magic   int32
 	Version int16
 	Pkttype int16
 }
+
+// GpmonQlogKey represents the query id.
 type GpmonQlogKey struct {
 	Tmid int32
 	Ssid int32
 	Ccnt int32
 }
 
+// GpmonProcMetrics represents process metrics, it is not used now and might be deprecated later
 type GpmonProcMetrics struct {
 	FdCnt                    uint32
 	CPUPct                   float32
@@ -45,6 +50,9 @@ type GpmonQlog struct {
 	CPUElapsed            int64
 	PMetrics              GpmonProcMetrics
 }
+
+// GpmonNodeKey represents the hash key of a exec plan node.
+// Dummy is only for c & golang binary transfer.
 type GpmonNodeKey struct {
 	SegID int16
 	Dummy int16
@@ -110,6 +118,7 @@ func (q GpmonQexec) ToPitMessage() (protos.PitMessage, error) {
 	}, nil
 }
 
+// GpmonStat is the instrument info. It may be replaced by complete instrument later.
 type GpmonStat struct {
 	Running    bool
 	Dummy      byte
@@ -125,6 +134,7 @@ type GpmonStat struct {
 
 const maxStatSize = 20
 
+// GpmonStats is a pack of multiple GpmonStat.
 type GpmonStats struct {
 	Length int64
 	Data   [maxStatSize]GpmonStat
