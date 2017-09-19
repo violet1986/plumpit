@@ -2,6 +2,7 @@ package querypit_test
 
 import (
 	"log"
+	"plumpit/collator"
 	. "plumpit/querypit"
 	"time"
 
@@ -14,14 +15,14 @@ var _ = Describe("UDP source", func() {
 	udpSource := UdpSource{}
 	quit := make(chan int, 1)
 	var err error
+	coll := collator.NewProcessCollator()
 	BeforeEach(func() {
 		go func() {
-			err = udpSource.Run(address, quit)
-			log.Println("Start run")
+			err = udpSource.Run(address, quit, coll)
 		}()
 	})
 	It("could run", func() {
-		ticker := time.NewTicker(5 * time.Second)
+		ticker := time.NewTicker(1000 * time.Second)
 		select {
 		case <-ticker.C:
 			log.Println("Time up")

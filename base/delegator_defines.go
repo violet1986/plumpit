@@ -3,13 +3,16 @@ package base
 import (
 	"fmt"
 	"plumpit/protos"
+	"time"
 )
 
 type Unmarshaller func([]byte) (RawMessage, error)
+type MultiUnmarshaller func([]byte) ([]RawMessage, error)
 
 type SourceFunc func(Source) (protos.PitMessage, error)
 
 type SourceDelegator func(...interface{}) SourceFunc
+type Sender func(protos.PitMessage) error
 
 func delegatorTypeError(typeWanted string) error {
 	return fmt.Errorf("Source is not a correct %s type", typeWanted)
@@ -50,4 +53,10 @@ func GetProcMemPercentDelegator(args ...interface{}) SourceFunc {
 		}
 		return protos.PitMessage{}, delegatorTypeError("Process Source")
 	}
+}
+
+type RuntimeConfig struct {
+	CpuInterval          time.Duration
+	MemInterval          time.Duration
+	CollatorEmitInterval time.Duration
 }

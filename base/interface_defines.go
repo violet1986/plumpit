@@ -22,6 +22,7 @@ type ProcSource interface {
 type ActiveSourceServer interface {
 	Run(args ...interface{}) error
 	GetRawMessage(Unmarshaller) (RawMessage, error)
+	GetRawMessages(Unmarshaller) ([]RawMessage, error)
 }
 
 type MapKey interface {
@@ -29,5 +30,5 @@ type MapKey interface {
 }
 
 type Collator interface {
-	AddMessage(protos.PitMessage)
+	AddMessageFunc(Sender) func(RawMessage) error
 }

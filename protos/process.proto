@@ -4,8 +4,9 @@ import "system.proto";
 import "query.proto";
 
 message ProcessSamplingInfo {
-    int32 pid = 1;
-    ProcMemInfo proc_mem_info = 2;
+    int32 procid = 1;
+    int32 segid = 2;
+    ProcMemInfo proc_mem_info = 3;
     // insight is a map of plan tree, key is node is, value is instrument info.
-    map<int32, PlumInstrument> insight = 3;
+    map<int32, PlumInstrument> insight = 4;
 }
