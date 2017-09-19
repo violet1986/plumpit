@@ -8,20 +8,28 @@ import (
 	"time"
 )
 
-func NewDispatcherRunner(c base.Collator, sender base.Sender) func(base.RuntimeConfig) {
-	return func(conf base.RuntimeConfig) {
-		collateTicker := time.NewTicker(conf.CollatorEmitInterval)
-		memFunc := base.GetProcMemPercentDelegator()
+func NewDispatcherRunner(conf *base.RuntimeConfig, c base.Collator) func(base.Sender) {
+	collateTicker := time.NewTicker(conf.CollatorEmitInterval)
+	GenerateProcMetrics := func() {
+		for pid, ok := range conf.ProcIDs {
+			if !ok {
+				continue
+			}
+			mem, err := conf.PSource.GetProcMemInfo(pid)
+			if err == nil {
+				c.Collate(mem)
+			}
+		}
+	}
+
+	return func(s base.Sender) {
 		for {
 			select {
 			case <-collateTicker.C:
-				mem, err := memFunc(conf.MemSource)
-				if err == nil {
-					c.Collate(mem)
-				}
+				GenerateProcMetrics()
 				pit, err := c.ToPitMessage()
 				if err == nil {
-					sender(pit)
+					s(pit)
 				}
 			}
 		}

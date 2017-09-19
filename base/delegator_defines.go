@@ -11,9 +11,7 @@ type MultiUnmarshaller func([]byte) ([]RawMessage, error)
 type Sender func(protos.PitMessage) error
 
 type RuntimeConfig struct {
-	MemSource            *SystemSource
-	CPUSource            *SystemSource
-	IOSource             *SystemSource
+	PSource              ProcSource
 	CollatorEmitInterval time.Duration
 	ProcIDs              map[int32]bool
 }
