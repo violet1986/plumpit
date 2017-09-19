@@ -18,12 +18,8 @@ var _ = Describe("Systempit With Sigar Source", func() {
 		sigarTestSource = SigarSource{}
 	})
 	Context("System CPU test", func() {
-		cpuFunc := base.GetSystemCpuDelegator()
-		It("Test GetSystemCpuDelegator", func() {
-			Expect(cpuFunc).NotTo(BeNil())
-		})
 		It("Test GetSystemCpu", func() {
-			cpu, err := cpuFunc(sigarTestSource)
+			cpu, err := sigarTestSource.GetSystemCpu()
 			Expect(err).NotTo(HaveOccurred())
 			Expect(cpu.PitType).To(Equal(protos.EnumPitType_SYSTEM_CPU))
 			systemCpu := cpu.GetSystemCpu()
@@ -48,16 +44,17 @@ var _ = Describe("Proc with gopsutil", func() {
 			}
 		}
 	}()
-	testPid := os.Getpid()
-	procTestSource := NewProcPsutilSource(testPid)
+	testPid := int32(os.Getpid())
+	procTestSource := &ProcPsutilSource{}
 	Context("scenario cpu", func() {
-		getCpuEvery3Second := base.GetProcCpuPercentDelegator(3 * time.Second)
-		It("process should not be nil", func() {
-			Expect(procTestSource).NotTo(BeNil())
-			Expect(getCpuEvery3Second).NotTo(BeNil())
+		It("ProcPsutilSource is a correct ProcSource", func() {
+			var iSource base.Source
+			iSource = procTestSource
+			_, ok := iSource.(base.ProcSource)
+			Expect(ok).To(BeTrue())
 		})
 		It("process cpu should not be 0", func() {
-			cpu, err := getCpuEvery3Second(procTestSource)
+			cpu, err := procTestSource.GetProcCpuPercent(testPid, 3*time.Second)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(cpu.PitType).To(Equal(protos.EnumPitType_PROC_CPU_PERCENT))
 			Expect(cpu.GetProcCpuPercent()).NotTo(BeNil())
@@ -66,12 +63,8 @@ var _ = Describe("Proc with gopsutil", func() {
 		})
 	})
 	Context("scenario mem info", func() {
-		getMemFunc := base.GetProcMemInfoDelegator()
-		It("mem func should not be nil", func() {
-			Expect(getMemFunc).NotTo(BeNil())
-		})
 		It("process mem should not be 0", func() {
-			mem, err := getMemFunc(procTestSource)
+			mem, err := procTestSource.GetProcMemInfo(testPid)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(mem.GetProcMemInfo().Pid).To(Equal(int32(testPid)))
 			Expect(mem.PitType).To(Equal(protos.EnumPitType_PROC_MEM_INFO))
@@ -79,12 +72,8 @@ var _ = Describe("Proc with gopsutil", func() {
 		})
 	})
 	Context("scenario mem percent", func() {
-		getMemFunc := base.GetProcMemPercentDelegator()
-		It("mem func should not be nil", func() {
-			Expect(getMemFunc).NotTo(BeNil())
-		})
 		It("process mem should not be 0", func() {
-			mem, err := getMemFunc(procTestSource)
+			mem, err := procTestSource.GetProcMemPercent(testPid)
 			Expect(err).NotTo(HaveOccurred())
 			Expect(mem.GetProcMemPercent().Pid).To(Equal(int32(testPid)))
 			Expect(mem.PitType).To(Equal(protos.EnumPitType_PROC_MEM_PERCENT))

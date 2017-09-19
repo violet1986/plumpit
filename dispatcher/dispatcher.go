@@ -11,10 +11,18 @@ import (
 func NewDispatcherRunner(c base.Collator, sender base.Sender) func(base.RuntimeConfig) {
 	return func(conf base.RuntimeConfig) {
 		collateTicker := time.NewTicker(conf.CollatorEmitInterval)
+		memFunc := base.GetProcMemPercentDelegator()
 		for {
 			select {
 			case <-collateTicker.C:
-				sender(c.ToPitMessage())
+				mem, err := memFunc(conf.MemSource)
+				if err == nil {
+					c.Collate(mem)
+				}
+				pit, err := c.ToPitMessage()
+				if err == nil {
+					sender(pit)
+				}
 			}
 		}
 	}

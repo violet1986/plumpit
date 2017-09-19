@@ -1,32 +1,29 @@
 package systempit
 
 import (
+	"fmt"
 	"plumpit/protos"
 	"time"
 
 	proc "github.com/shirou/gopsutil/process"
 )
 
-type ProcPsutilSource struct {
-	process proc.Process
-}
+type ProcPsutilSource struct{}
 
-func NewProcPsutilSource(pid int) *ProcPsutilSource {
-	process := proc.Process{Pid: int32(pid)}
-	return &ProcPsutilSource{process: process}
-}
-func (self ProcPsutilSource) GetProcCpuPercent(duration interface{}) (protos.PitMessage, error) {
+func (pSource ProcPsutilSource) GetProcCpuPercent(pid int32, duration time.Duration) (protos.PitMessage, error) {
 	result := protos.PitMessage{}
-	exist, _ := proc.PidExists(self.process.Pid)
+	process := proc.Process{Pid: pid}
+	exist, _ := proc.PidExists(pid)
 	if !exist {
 		return result, nil
 	}
-	percent, err := self.process.Percent(duration.(time.Duration))
+	percent, err := process.Percent(duration)
 	if err != nil {
+		fmt.Println("error !!!")
 		return result, err
 	}
 	cpuResult := protos.ProcCpuPercent{
-		Pid:     self.process.Pid,
+		Pid:     pid,
 		Percent: float64(percent),
 	}
 	result = protos.PitMessage{
@@ -36,13 +33,14 @@ func (self ProcPsutilSource) GetProcCpuPercent(duration interface{}) (protos.Pit
 	return result, err
 }
 
-func (self ProcPsutilSource) GetProcMemInfo() (protos.PitMessage, error) {
-	mem, err := self.process.MemoryInfo()
+func (self ProcPsutilSource) GetProcMemInfo(pid int32) (protos.PitMessage, error) {
+	process := proc.Process{Pid: pid}
+	mem, err := process.MemoryInfo()
 	if err != nil {
 		return protos.PitMessage{}, err
 	}
 	memResult := protos.ProcMemInfo{
-		Pid:  self.process.Pid,
+		Pid:  pid,
 		RSS:  mem.RSS,
 		VMS:  mem.VMS,
 		Swap: mem.Swap,
@@ -53,18 +51,19 @@ func (self ProcPsutilSource) GetProcMemInfo() (protos.PitMessage, error) {
 	}, nil
 }
 
-func (self ProcPsutilSource) GetProcMemPercent() (protos.PitMessage, error) {
+func (pSource ProcPsutilSource) GetProcMemPercent(pid int32) (protos.PitMessage, error) {
 	result := protos.PitMessage{}
-	exist, _ := proc.PidExists(self.process.Pid)
+	process := proc.Process{Pid: pid}
+	exist, _ := proc.PidExists(process.Pid)
 	if !exist {
 		return result, nil
 	}
-	percent, err := self.process.MemoryPercent()
+	percent, err := process.MemoryPercent()
 	if err != nil {
 		return result, err
 	}
 	memResult := protos.ProcMemPercent{
-		Pid:     self.process.Pid,
+		Pid:     pid,
 		Percent: float64(percent),
 	}
 	result = protos.PitMessage{

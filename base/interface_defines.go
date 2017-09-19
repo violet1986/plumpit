@@ -2,6 +2,7 @@ package base
 
 import (
 	"plumpit/protos"
+	"time"
 )
 
 type RawMessage interface {
@@ -13,9 +14,9 @@ type SystemSource interface {
 	GetSystemCpu() (protos.PitMessage, error)
 }
 type ProcSource interface {
-	GetProcCpuPercent(duration interface{}) (protos.PitMessage, error)
-	GetProcMemInfo() (protos.PitMessage, error)
-	GetProcMemPercent() (protos.PitMessage, error)
+	GetProcCpuPercent(int32, time.Duration) (protos.PitMessage, error)
+	GetProcMemInfo(int32) (protos.PitMessage, error)
+	GetProcMemPercent(int32) (protos.PitMessage, error)
 }
 
 // ActiveSourceServer represent source that run standalone, receive query related message and then husk the message into PitMessage.
@@ -29,6 +30,9 @@ type MapKey interface {
 	GetHashKeyString() string
 }
 
+// Collator can save RawMessage and transfer to PitMessage.
 type Collator interface {
 	AddMessageFunc(Sender) func(RawMessage) error
+	ToPitMessage() (protos.PitMessage, error)
+	Collate(protos.PitMessage)
 }

@@ -28,6 +28,7 @@ func main() {
 	quit := make(chan int, 1)
 	var err error
 	coll := collator.NewProcessCollator()
+	//config := base.RuntimeConfig{}
 	go func() {
 		err = udpsource.Run(fmt.Sprintf(":%d", flagUDPPort), quit, coll)
 	}()
